@@ -1,0 +1,216 @@
+<!doctype html>
+<html>
+</html>
+<head>
+    <title>Mortgage Calculator</title>
+    <style>
+		body{
+                font-family: "calibri";
+				font-size: 100%;
+        }
+        
+				.btn {
+  background: #3498db;
+  background-image: -webkit-linear-gradient(top, #3498db, #2980b9);
+  background-image: -moz-linear-gradient(top, #3498db, #2980b9);
+  background-image: -ms-linear-gradient(top, #3498db, #2980b9);
+  background-image: -o-linear-gradient(top, #3498db, #2980b9);
+  background-image: linear-gradient(to bottom, #3498db, #2980b9);
+  -webkit-border-radius: 28;
+  -moz-border-radius: 28;
+  border-radius: 28px;
+  font-family: Arial;
+  color: #ffffff;
+  font-size: 20px;
+  padding: 10px 20px 10px 20px;
+  text-decoration: none;
+  text-align: center;
+  width: 6.5%;
+}
+
+.btn:hover {
+  background: #3cb0fd;
+  background-image: -webkit-linear-gradient(top, #3cb0fd, #3498db);
+  background-image: -moz-linear-gradient(top, #3cb0fd, #3498db);
+  background-image: -ms-linear-gradient(top, #3cb0fd, #3498db);
+  background-image: -o-linear-gradient(top, #3cb0fd, #3498db);
+  background-image: linear-gradient(to bottom, #3cb0fd, #3498db);
+  text-decoration: none;
+}
+    </style>
+</head>
+<body>
+	Name:<br><input type= "text" id="name"><br>
+	Phone #:<br><input type= "text" id="phone"><br>
+	Loan term in years:<br><input type= "text" id="lTerm" placeholder="Enter How Many Years" value= "30"><br>
+	Property Price:<br><input type="text" id="pPrice" value="170000"><br>
+	Down Payment in USD:<br><input type="text" id="dPayment" value="10000"><br>
+	Interest Rate Per Year %:<br><input type="text" id="iRate" value="5"><br>
+	Property Taxes Per Year:<br><input type="text" id="pTaxes" placeholder="Enter USD Amount" value="2500"><br><br>
+	<div class="btn" id="button">Calculate</div><br>
+	<input type="checkbox" name="amortization" id="amortization" value="true">Show Amortization
+	<input type="checkbox" name="taxes" id="taxes" value="true">Add Taxes<br><br>
+	<input type="checkbox" name="pmi" id="addPmi" value="true">Add Estimated PMI<br>
+
+		<p>This PMI estimate is calibrated for owner occupied, primary residences <br>
+		using agency conforming loan terms on a home purchase and a 720 credit score.<br><br>
+		PMI calculations use standard monthly premiums for fixed rate terms.<br>
+		Reduced premium and financed PMI may reduce costs. Adjustable Rate <br>
+		Mortgages, second homes and refinances will have slightly different <br>
+		payments. Contact your loan specialist for details, or if your <br>
+		situation is slightly different than the terms described above.</p>	
+		<p id="result" style="font-family: calibri; font-size:200%";></p>
+<script>
+	function selectFactorA(ltv){
+		if (ltv <= 85){
+			return(.0035);}
+		if (ltv <= 90 && ltv > 85){
+			return(.0054);}
+		if (ltv <= 95 && ltv > 90){
+			return(.0072);} 
+		if (ltv <= 97 && ltv > 95){
+			return(.0115);} 
+	}
+	function selectFactorB(ltv){
+		if (ltv <= 85){
+			return(.0030);}
+		if (ltv <= 90 && ltv > 85){
+			return(.0049);}
+		if (ltv <= 95 && ltv > 90){
+			return(.0067);} 
+		if (ltv <= 97 && ltv > 95){
+			return(.0110);} 
+	}
+	var btn= document.getElementById("button");
+	btn.onclick= function(){
+		var name= document.getElementById("name").value;
+		var phone= document.getElementById("phone").value;
+		var lTerm= document.getElementById("lTerm").value;
+		var pPrice= document.getElementById("pPrice").value;
+		var dPayment= document.getElementById("dPayment").value;
+		var iRate= document.getElementById("iRate").value;
+		var pTaxes= document.getElementById("pTaxes").value;
+		checkForInvalid(name, phone, lTerm, pPrice, dPayment, iRate, pTaxes);
+		var myResult = amortization(name, phone, lTerm, pPrice, dPayment, iRate, pTaxes);
+	document.getElementById("result").innerHTML = myResult;
+	};
+				 
+//Checking for errors----------------------------------------------------------------------------------------------
+function checkForInvalid(name, phone, lTerm, pPrice, dPayment, iRate, pTaxes) {
+	if (!lTerm || !pPrice || !dPayment || !iRate) {
+			alert("Please Enter Proper Information");
+			return "";
+		}
+	if (!pTaxes) {
+		
+	}
+}
+//Show Amortization------------------------------------------------------------------------------------------------	
+	function amortization(name, phone, lTerm, pPrice, dPayment, iRate, pTaxes) {
+		var resultStr= "";
+		lTerm= parseInt(lTerm);
+		console.log(lTerm);
+		var byMonth= lTerm*12
+		byMonth= parseInt(byMonth);
+		console.log(byMonth);
+		pPrice= parseInt(pPrice);
+		pTaxes= parseInt(pTaxes);
+		var monthlyPTax= pTaxes/12;
+		console.log(monthlyPTax);
+		dPayment= parseInt(dPayment);
+		var principalLessDownPayment= pPrice-dPayment;
+		console.log(principalLessDownPayment);
+		
+		//PMI_LTV---------------------------------------------------------------------------------------
+		var PMI
+		var ltv= (principalLessDownPayment/pPrice)*100;
+		console.log(ltv);
+		var factor;
+		//----------------------------------------------------------------------------------------------
+		
+		iRate= parseInt(iRate);
+		iRate/= 100;
+		console.log(iRate);
+		var iRate1= (principalLessDownPayment*iRate)/12;
+		console.log(iRate1);
+		var iRate2= iRate/12;
+		console.log(iRate2);
+		
+					/////////////////////////IMPORTANT MONTHLY PAYMENTS EQUATION///////////////////////
+		var mPayments=0;
+		mPayments= parseInt(mPayments);
+	
+		function mPaymentsEqu(iRate2, byMonth, principalLessDownPayment) {
+			var pow1= Math.pow((1+iRate2), byMonth);
+			var pow2= principalLessDownPayment*(iRate2*pow1);
+			var mPay= pow2/(pow1-1);
+			return mPay;
+		}
+		mPayments= mPaymentsEqu(iRate2, byMonth, principalLessDownPayment);
+		console.log(mPayments);
+		
+		//Add Taxes_Add PMI--------------------------------------------------------------------------------------------------------
+		var addPmi= document.getElementById("addPmi");
+		var addTaxes= document.getElementById("taxes");
+		var mPayPlusTax= mPayments+monthlyPTax;
+			
+		if (addPmi.checked) {
+			if (ltv>97) {
+			alert("Your LTV of "+ltv.toFixed(2)+" is too high and my PMI quotes require an LTV below 97.");	
+				}
+			if (ltv < 80){
+				PMI= 0;
+				}
+				else if (byMonth>300) {
+					factor = selectFactorA(ltv);}
+				
+					else{
+						factor = selectFactorB(ltv);}	
+						PMI = factor * principalLessDownPayment/12;
+						console.log(PMI);
+						if (addTaxes.checked) {
+							var PMIPlusTaxes= mPayPlusTax+PMI;
+							console.log(PMIPlusTaxes);
+							resultStr +="<br><br> Your PMI estimate will be $"+PMI.toFixed(2)+" and your Monthly payment with estimated PMI and $"+monthlyPTax.toFixed(2)+" in taxes included will be $"+PMIPlusTaxes.toFixed(2);
+						}
+						else {
+							PMIPlusmPayments= PMI+mPayments;
+							console.log(PMIPlusmPayments);
+							resultStr +="<br><br> Your PMI estimate will be $"+PMI.toFixed(2)+" and your Monthly payment with estimated PMI included will be $"+PMIPlusmPayments.toFixed(2);
+							}
+			
+		}
+		
+		if (addTaxes.checked) {
+			if (!pTaxes) {
+				alert("Please enter anual Taxes");
+			}
+			else{resultStr +="<br><br> Your Monthly taxes are $"+monthlyPTax.toFixed(2)+" and your total monthly payment with taxes included will be $"+mPayPlusTax.toFixed(2);	
+			}
+		}
+		
+		resultStr +="<br><br> In a "+byMonth.toFixed(2)+" months term, your Monthly Payment will be $"+mPayments.toFixed(2);
+		
+		//------------------------------------------------------------------------------------------------------------------			
+		var addAmort= document.getElementById("amortization");
+		
+		if (addAmort.checked) {		
+			var mInterest= 0;
+			var principal= 0;
+			var balance= 0;
+			var totalInterest= 0;
+			
+			for (var month=1; month<=byMonth; month++) {
+				mInterest= iRate2*principalLessDownPayment;
+				principal= mPayments-mInterest;
+				principalLessDownPayment-=principal;
+				totalInterest+=mInterest;
+				resultStr +="<br><br>Month "+month+" Monthly Payment: "+mPayments.toFixed(2)+" Interest: "+mInterest.toFixed(2)+" Total Interest: "+
+				totalInterest.toFixed(2)+" Principal: "+principal.toFixed(2)+" Balance: "+principalLessDownPayment.toFixed(2);			
+			}		
+		}
+			return resultStr;
+	}
+
+</script>
+</body>
