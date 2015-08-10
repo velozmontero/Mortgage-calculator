@@ -61,7 +61,24 @@
 		situation is slightly different than the terms described above.</p>	
 		<p id="result" style="font-family: calibri; font-size:200%";></p>
 <script>
+	var name;
+	var phone;
+	var lTerm;
+	var pPrice;
+	var dPayment;
+	var iRate;
+	var pTaxes;
 	function selectFactorA(ltv){
+		if (ltv <= 85){
+			return(.0040);}
+		if (ltv <= 90 && ltv > 85){
+			return(.0061);}
+		if (ltv <= 95 && ltv > 90){
+			return(.0077);} 
+		if (ltv <= 97 && ltv > 95){
+			return(.0120);} 
+	}
+	function selectFactorB(ltv){
 		if (ltv <= 85){
 			return(.0035);}
 		if (ltv <= 90 && ltv > 85){
@@ -71,42 +88,32 @@
 		if (ltv <= 97 && ltv > 95){
 			return(.0115);} 
 	}
-	function selectFactorB(ltv){
-		if (ltv <= 85){
-			return(.0030);}
-		if (ltv <= 90 && ltv > 85){
-			return(.0049);}
-		if (ltv <= 95 && ltv > 90){
-			return(.0067);} 
-		if (ltv <= 97 && ltv > 95){
-			return(.0110);} 
-	}
 	var btn= document.getElementById("button");
 	btn.onclick= function(){
-		var name= document.getElementById("name").value;
-		var phone= document.getElementById("phone").value;
-		var lTerm= document.getElementById("lTerm").value;
-		var pPrice= document.getElementById("pPrice").value;
-		var dPayment= document.getElementById("dPayment").value;
-		var iRate= document.getElementById("iRate").value;
-		var pTaxes= document.getElementById("pTaxes").value;
-		checkForInvalid(name, phone, lTerm, pPrice, dPayment, iRate, pTaxes);
-		var myResult = amortization(name, phone, lTerm, pPrice, dPayment, iRate, pTaxes);
+		name= document.getElementById("name").value;
+		phone= document.getElementById("phone").value;
+		lTerm= document.getElementById("lTerm").value;
+		pPrice= document.getElementById("pPrice").value;
+		dPayment= document.getElementById("dPayment").value;
+		iRate= document.getElementById("iRate").value;
+		pTaxes= document.getElementById("pTaxes").value;
+		checkForInvalid();
+		var myResult = amortization();
 	document.getElementById("result").innerHTML = myResult;
 	};
 				 
 //Checking for errors----------------------------------------------------------------------------------------------
-function checkForInvalid(name, phone, lTerm, pPrice, dPayment, iRate, pTaxes) {
+function checkForInvalid() {
 	if (!lTerm || !pPrice || !dPayment || !iRate) {
 			alert("Please Enter Proper Information");
 			return "";
 		}
 	if (!pTaxes) {
-		
+		pTaxes*=0;
 	}
 }
 //Show Amortization------------------------------------------------------------------------------------------------	
-	function amortization(name, phone, lTerm, pPrice, dPayment, iRate, pTaxes) {
+	function amortization() {
 		var resultStr= "";
 		lTerm= parseInt(lTerm);
 		console.log(lTerm);
@@ -189,7 +196,7 @@ function checkForInvalid(name, phone, lTerm, pPrice, dPayment, iRate, pTaxes) {
 			}
 		}
 		
-		resultStr +="<br><br> In a "+byMonth.toFixed(2)+" months term, your Monthly Payment will be $"+mPayments.toFixed(2);
+		resultStr +="<br><br> In a "+Math.abs(byMonth)+" months term, your Monthly Payment will be $"+mPayments.toFixed(2);
 		
 		//------------------------------------------------------------------------------------------------------------------			
 		var addAmort= document.getElementById("amortization");
