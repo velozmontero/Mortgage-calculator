@@ -68,25 +68,29 @@
 	var dPayment;
 	var iRate;
 	var pTaxes;
+	var PMI;
+	var ltv;
+	
 	function selectFactorA(ltv){
-		if (ltv <= 85){
+		if (ltv <= 85 && ltv > 80){
 			return(.0040);}
 		if (ltv <= 90 && ltv > 85){
 			return(.0061);}
 		if (ltv <= 95 && ltv > 90){
 			return(.0077);} 
 		if (ltv <= 97 && ltv > 95){
-			return(.0120);} 
+			return(.0120);}
 	}
+	
 	function selectFactorB(ltv){
-		if (ltv <= 85){
+		if (ltv <= 85 && ltv > 80){
 			return(.0035);}
 		if (ltv <= 90 && ltv > 85){
 			return(.0054);}
 		if (ltv <= 95 && ltv > 90){
 			return(.0072);} 
 		if (ltv <= 97 && ltv > 95){
-			return(.0115);} 
+			return(.0115);}
 	}
 	var btn= document.getElementById("button");
 	btn.onclick= function(){
@@ -108,6 +112,7 @@ function checkForInvalid() {
 			alert("Please Enter Proper Information");
 			return "";
 		}
+	
 	if (!pTaxes) {
 		pTaxes*=0;
 	}
@@ -129,8 +134,7 @@ function checkForInvalid() {
 		console.log(principalLessDownPayment);
 		
 		//PMI_LTV---------------------------------------------------------------------------------------
-		var PMI
-		var ltv= (principalLessDownPayment/pPrice)*100;
+		ltv= (principalLessDownPayment/pPrice)*100;
 		console.log(ltv);
 		var factor;
 		//----------------------------------------------------------------------------------------------
@@ -160,33 +164,6 @@ function checkForInvalid() {
 		var addPmi= document.getElementById("addPmi");
 		var addTaxes= document.getElementById("taxes");
 		var mPayPlusTax= mPayments+monthlyPTax;
-			
-		if (addPmi.checked) {
-			if (ltv>97) {
-			alert("Your LTV of "+ltv.toFixed(2)+" is too high and my PMI quotes require an LTV below 97.");	
-				}
-			if (ltv < 80){
-				PMI= 0;
-				}
-				else if (byMonth>300) {
-					factor = selectFactorA(ltv);}
-				
-					else{
-						factor = selectFactorB(ltv);}	
-						PMI = factor * principalLessDownPayment/12;
-						console.log(PMI);
-						if (addTaxes.checked) {
-							var PMIPlusTaxes= mPayPlusTax+PMI;
-							console.log(PMIPlusTaxes);
-							resultStr +="<br><br> Your PMI estimate will be $"+PMI.toFixed(2)+" and your Monthly payment with estimated PMI and $"+monthlyPTax.toFixed(2)+" in taxes included will be $"+PMIPlusTaxes.toFixed(2);
-						}
-						else {
-							PMIPlusmPayments= PMI+mPayments;
-							console.log(PMIPlusmPayments);
-							resultStr +="<br><br> Your PMI estimate will be $"+PMI.toFixed(2)+" and your Monthly payment with estimated PMI included will be $"+PMIPlusmPayments.toFixed(2);
-							}
-			
-		}
 		
 		if (addTaxes.checked) {
 			if (!pTaxes) {
@@ -197,6 +174,51 @@ function checkForInvalid() {
 		}
 		
 		resultStr +="<br><br> In a "+Math.abs(byMonth)+" months term, your Monthly Payment will be $"+mPayments.toFixed(2);
+		
+		if (addPmi.checked) {
+			if (ltv>97) {
+			alert("Your LTV of "+ltv.toFixed(2)+" is too high and my PMI quotes require an LTV below 97.");
+			}
+			else if (ltv<=80){
+				PMI;				
+			}
+			else if (byMonth>300 && ltv>80 && ltv<=97) {
+				factor = selectFactorA(ltv);
+				}				
+				else if (byMonth<=300 && ltv>80 && ltv<=97) {
+					factor = selectFactorB(ltv);
+					}
+		
+			if (PMI==0){
+			PMI;
+			console.log(PMI);
+			}
+			else{					
+				PMI = factor * principalLessDownPayment/12;
+				console.log(PMI);
+			}
+			if (!PMI && ltv<=80) {
+				return resultStr +="<br><br>Your down payment of 20% or more eliminates your PMI obligations and In a "+Math.abs(byMonth)+" months term, your Monthly Payment will be $"+mPayments.toFixed(2);
+			}
+			if (!PMI && ltv>97) {
+				return resultStr +="<br><br>Your LTV is too high and banks do not provide loans in these cases.<br>Asuming you have an independent Lender loan (not a Bank) in a "+Math.abs(byMonth)+" months term, your Monthly Payment will be $"+mPayments.toFixed(2);
+			}
+			if (addTaxes.checked) {
+				var PMIPlusTaxes= mPayPlusTax+PMI;
+				console.log(PMIPlusTaxes);
+				resultStr +="<br><br> Your PMI estimate will be $"+PMI.toFixed(2)+
+				" and your Monthly payment with estimated PMI and $"+monthlyPTax.toFixed(2)+
+				" in taxes included will be $"+PMIPlusTaxes.toFixed(2);
+			}
+			else {
+				PMIPlusmPayments= PMI+mPayments;
+				console.log(PMIPlusmPayments);
+				resultStr +="<br><br> Your PMI estimate will be $"+PMI.toFixed(2)+
+				" and your Monthly payment with estimated PMI included will be $"+PMIPlusmPayments.toFixed(2);
+				}
+			
+		}
+		
 		
 		//------------------------------------------------------------------------------------------------------------------			
 		var addAmort= document.getElementById("amortization");
