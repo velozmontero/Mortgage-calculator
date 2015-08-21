@@ -165,6 +165,28 @@ function checkForInvalid() {
 		var addTaxes= document.getElementById("taxes");
 		var mPayPlusTax= mPayments+monthlyPTax;
 		
+		
+		//------------------------------------------------------------------------------------------------------------------			
+		resultStr +="<br><br> In a "+Math.abs(byMonth)+" months term, your Monthly Payment will be $"+mPayments.toFixed(2);
+		
+		var addAmort= document.getElementById("amortization");
+		
+		if (addAmort.checked) {		
+			var mInterest= 0;
+			var principal= 0;
+			var balance= 0;
+			var totalInterest= 0;
+			
+			for (var month=1; month<=byMonth; month++) {
+				mInterest= iRate2*principalLessDownPayment;
+				principal= mPayments-mInterest;
+				principalLessDownPayment-=principal;
+				totalInterest+=mInterest;
+				resultStr +="<br><br>Month "+month+" Monthly Payment: "+mPayments.toFixed(2)+" Interest: "+mInterest.toFixed(2)+" Total Interest: "+
+				totalInterest.toFixed(2)+" Principal: "+principal.toFixed(2)+" Balance: "+principalLessDownPayment.toFixed(2);			
+			}		
+		}
+		
 		if (addTaxes.checked) {
 			if (!pTaxes) {
 				alert("Please enter anual Taxes");
@@ -173,7 +195,6 @@ function checkForInvalid() {
 			}
 		}
 		
-		resultStr +="<br><br> In a "+Math.abs(byMonth)+" months term, your Monthly Payment will be $"+mPayments.toFixed(2);
 		
 		if (addPmi.checked) {
 			if (ltv>97) {
@@ -219,25 +240,6 @@ function checkForInvalid() {
 			
 		}
 		
-		
-		//------------------------------------------------------------------------------------------------------------------			
-		var addAmort= document.getElementById("amortization");
-		
-		if (addAmort.checked) {		
-			var mInterest= 0;
-			var principal= 0;
-			var balance= 0;
-			var totalInterest= 0;
-			
-			for (var month=1; month<=byMonth; month++) {
-				mInterest= iRate2*principalLessDownPayment;
-				principal= mPayments-mInterest;
-				principalLessDownPayment-=principal;
-				totalInterest+=mInterest;
-				resultStr +="<br><br>Month "+month+" Monthly Payment: "+mPayments.toFixed(2)+" Interest: "+mInterest.toFixed(2)+" Total Interest: "+
-				totalInterest.toFixed(2)+" Principal: "+principal.toFixed(2)+" Balance: "+principalLessDownPayment.toFixed(2);			
-			}		
-		}
 			return resultStr;
 	}
 
